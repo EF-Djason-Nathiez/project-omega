@@ -9,6 +9,19 @@ public class PlayerController : PlayerAttribute
 
     public Vector3 inputDirection; //Direction du stick de mouvement
 
+    protected void Awake()
+    {
+        playerInputs = new PlayerInputs();
+    }
+    void OnEnable()
+    {
+        playerInputs.Enable();
+    }
+    void OnDisable()
+    {
+        playerInputs.Disable();
+    }
+
 
     public void Update()
     {
@@ -21,8 +34,16 @@ public class PlayerController : PlayerAttribute
         // Appeler la méthode de mouvement du joueur
         MovePlayer(direction);
 
-        Vector3 cameraRotation = playerInputs.Main.CameraRotation.ReadValue<Vector2>();
-        CameraManager.Instance.RotateAroundPlayer(cameraRotation.x, cameraRotation.z);
+        if(direction.magnitude > 0.1f)
+        {
+            // Mettre à jour l'animation de marche
+            PlayerManager.Instance.playerAnimationController.SetAnimationState("IsRunning", true);
+        }
+        else
+        {
+            // Mettre à jour l'animation d'arrêt
+            PlayerManager.Instance.playerAnimationController.SetAnimationState("IsRunning", false);
+        }
     }
 
     public void MovePlayer(Vector3 direction)
